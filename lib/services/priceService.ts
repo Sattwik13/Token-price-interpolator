@@ -74,13 +74,15 @@ async function fetchPriceFromAlchemy(tokenAddress: string, network: string, time
   try {
     const price = await pRetry(
       async () => {
-        // This is a simplified example.
+        // ✅ Step 1: Get the latest block number (in real use, map timestamp to block)
         const blockNumber = await alchemy.core.getBlockNumber();
+
+        // ✅ Step 2: Simulate a price based on timestamp (daily sine wave pattern)
         const basePrice = 1.0;
         const variation = Math.sin(timestamp / 86400) * 0.1;
         const simulatedPrice = basePrice + variation;
         
-        return Math.max(0.001, simulatedPrice);
+        return Math.max(0.001, simulatedPrice); 
       },
       {
         retries: 3,

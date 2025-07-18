@@ -39,7 +39,9 @@ async function connectRedis() {
 
     // Handle successful connection events
     redisClient.on('connect', () => {
-      console.log('📦 Connected to Redis-cloud(oracleToken)');
+      const port = redisClient.options?.socket?.port;
+      const host = redisClient.options?.socket?.host;
+      console.log(`📦 Connected to Redis-cloud(oracleToken) ${port}`);
     });
 
     // Connect to Redis server
