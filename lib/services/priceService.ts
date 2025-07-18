@@ -1,14 +1,14 @@
 import {
   Alchemy,
   Network,
-  AssetTransfersCategory, // IMPROVEMENT: Import enum
-  SortingOrder,           // IMPROVEMENT: Import enum
+  AssetTransfersCategory, 
+  SortingOrder,           
 } from 'alchemy-sdk';
 import pRetry from 'p-retry';
 import { getFromCache, setCache } from '../config/redis';
 import { getPriceFromDB, savePriceToDB } from '../config/mongodb';
 
-// IMPROVEMENT: Define a type for price data points for better type safety
+// Define a type for price data points for better type safety
 interface PriceDataPoint {
   timestamp: number;
   price: number;
@@ -160,11 +160,10 @@ export async function getPriceWithInterpolation(tokenAddress: string, network: s
     const dbPrice = await getPriceFromDB(tokenAddress, network, timestamp);
     if (dbPrice) {
       await setCache(cacheKey, dbPrice.toString(), 300);
-      // IMPROVEMENT: More accurate source logging
       return { price: dbPrice, source: 'database' };
     }
 
-    // ✅ 3. Try fetching exact price from Alchemy
+    // ✅ 3. Check fetching exact price from Alchemy
     try {
       const alchemyPrice = await fetchPriceFromAlchemy(tokenAddress, network, timestamp);
       await savePriceToDB(tokenAddress, network, timestamp, alchemyPrice);

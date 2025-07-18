@@ -23,6 +23,25 @@ graph LR
     N --> O[Persist to DB]
 ```
 
+## Data-flow Diagram
+
+```mermaid
+graph TD
+  A[Client Request: token, network, timestamp]
+  A --> B[Check Redis Cache]
+  B -- Hit --> R1[Return Cached Price]
+
+  B -- Miss --> C[Check MongoDB]
+  C -- Hit --> R2[Cache + Return DB Price]
+
+  C -- Miss --> D[Fetch from Alchemy]
+  D -- Success --> R3[Save to DB + Cache + Return]
+
+  D -- Fail --> E[Get Nearest Prices]
+  E --> F[Interpolate Price]
+  F --> R4[Cache + Return Interpolated Price]
+```
+
 ## 🚀 Features
 
 - **Real-time Price Fetching**: Get historical token prices for any timestamp
