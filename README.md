@@ -2,6 +2,11 @@
 
 A full-stack Next.js application that provides historical token prices with intelligent interpolation for missing data points.
 
+## 📫 Token Address`(For running)`
+#### Ethereum's Token Address--> `0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48`
+
+#### Polygon's Token Address--> `0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174`
+
 ## 🏗️ Architecture
 
 ```mermaid
@@ -94,6 +99,8 @@ ALCHEMY_API_KEY=your_alchemy_api_key
 MONGODB_URI=mongodb://localhost:27017/token-oracle
 REDIS_URL=redis://localhost:6379
 ```
+
+
 
 4. **Start services**
 ```bash

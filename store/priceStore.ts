@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import toast from 'react-hot-toast';
 
 /**
  * Represents the structure of the price data returned from the backend.
@@ -106,6 +107,7 @@ export const usePriceStore = create<PriceStore>((set) => ({
       // If the API fails, parse the error and throw
       if (!response.ok) {
         const errorData = await response.json();
+        toast.error('❌ Failed to schedule history fetch');
         throw new Error(errorData.error || 'Failed to schedule history fetch');
       }
 
@@ -114,7 +116,8 @@ export const usePriceStore = create<PriceStore>((set) => ({
         scheduleLoading: false,
         error: null 
       });
-      // You might want to show a success message here
+      
+      
     } catch (error: any) {
       // Capture any errors and update the store
       set({ error: error.message, scheduleLoading: false });

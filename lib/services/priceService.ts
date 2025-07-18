@@ -41,7 +41,7 @@ export async function getTokenCreationDate(tokenAddress: string, network: string
         });
       },
       {
-        retries: 3,
+        retries: 3, // Retry 3 times if API fails
         onFailedAttempt: (error) => {
           console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
         },

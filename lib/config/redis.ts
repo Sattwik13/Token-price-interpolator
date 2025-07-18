@@ -28,7 +28,7 @@ async function connectRedis() {
           return Math.min(retries * 100, 3000);
         }
       },
-      username: process.env.REDIS_USERNAME || 'default', // Username (Redis Cloud requires this
+      username: process.env.REDIS_USERNAME || 'default', // Username (Redis Cloud requires this)
       password: process.env.REDIS_PASSWORD,
     });
 
@@ -40,7 +40,6 @@ async function connectRedis() {
     // Handle successful connection events
     redisClient.on('connect', () => {
       const port = redisClient.options?.socket?.port;
-      const host = redisClient.options?.socket?.host;
       console.log(`📦 Connected to Redis-cloud(oracleToken) ${port}`);
     });
 
@@ -49,8 +48,9 @@ async function connectRedis() {
     
     // Create a separate connection config object for BullMQ usage
     redisConnection = {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379,
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      username: process.env.REDIS_USERNAME,
       password: process.env.REDIS_PASSWORD,
     };
 

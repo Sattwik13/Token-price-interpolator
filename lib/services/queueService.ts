@@ -3,17 +3,23 @@ import { getTokenCreationDate, fetchPriceFromAlchemy } from './priceService';
 import { savePriceToDB } from '../config/mongodb';
 import { redisConnection } from '../config/redis';
 
+
 //----- Create a BullMQ queue named 'history-fetch' for fetching historical token prices.
 //----- Job retry, backoff, and cleanup options are configured.
 const historyQueue = new Queue('history-fetch', {
-  connection: redisConnection,
+  connection: {
+    host: 'redis-14875.c212.ap-south-1-1.ec2.redns.redis-cloud.com', // Redis server hostname from environment
+    port: 14875,
+    username: 'default', // Username (Redis Cloud requires this)
+    password: 'poKpje7rwsbxzrcUg941jKpI7Tqhtdee',
+  },
   defaultJobOptions: {
     removeOnComplete: 10, // Keep last 10 completed jobs
     removeOnFail: 5,  // Keep last 5 failed jobs
     attempts: 3,  // Retry a job up to 3 times if it fails
     backoff: {
-      type: 'exponential',
-      delay: 2000,
+      type: 'exponential', // Retry delay will increase exponentially with each failed attempt (e.g., 2s → 4s → 8s...)
+      delay: 2000,  // Initial delay of 2 seconds before retrying the first failed job
     },
   },
 });
@@ -27,6 +33,8 @@ const historyWorker = new Worker(
   'history-fetch',
   async (job) => {
     const { token, network } = job.data;
+      console.log(`daily prices for ${token} on ${network}`);
+    
     
     try {
       // ✅ Step 1: Get token creation date (used as the starting point for price history)
@@ -55,6 +63,7 @@ const historyWorker = new Worker(
 
               // Save the price to the MongoDB database(oracleToken)
               await savePriceToDB(token, network, timestamp, price);
+              console.log(`Saved to DB: ${token} | ${network} | ${timestamp} | ${price}`);
               
               // Update progress of job (in percentage)
               const progress = Math.floor(((i + batch.indexOf(timestamp) + 1) / dailyTimestamps.length) * 100);
@@ -81,8 +90,14 @@ const historyWorker = new Worker(
     }
   },
   {
-    connection: redisConnection,
+    connection: {
+    host: 'redis-14875.c212.ap-south-1-1.ec2.redns.redis-cloud.com', // Redis server hostname from environment
+    port: 14875,
+    username: 'default', // Username (Redis Cloud requires this)
+    password: 'poKpje7rwsbxzrcUg941jKpI7Tqhtdee',
+  },
     concurrency: 2, // Allow 2 jobs to be processed in parallel manner
+    lockDuration: 300000, // 🔥 5 minutes (default is 30,000 ms)
   }
 );
 
